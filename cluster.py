@@ -16,6 +16,7 @@ def parseArgs():
     parser.add_argument('-m', '--markers', help='A text file with a marker on each line to specify which markers to use for clustering', type=str, required=False)
     parser.add_argument('-v', '--verbose', help='Flag to print out progress of script', action="store_true", required=False)
     parser.add_argument('-k', '--neighbors', help='the number of nearest neighbors to use when clustering. The default is 30.', default=30, type=int, required=False)
+    parser.add_argument('-c', '--method', help='Include a column with the method name in the output files.', action="store_true", required=False)
     args = parser.parse_args()
     return args
 
@@ -24,8 +25,9 @@ def parseArgs():
 Get input data file name
 '''
 def getDataName(path):
-    fileName = path.split('/')[-1]
-    return fileName
+    fileName = path.split('/')[-1] # get filename from end of input path
+    dataName = fileName[:fileName.rfind('.')] # get data name by removing extension from file name
+    return dataName
 
 
 '''
@@ -110,6 +112,11 @@ Write CELLS_FILE from leidenCluster() adata
 def writeCells(adata):
     cells = pd.DataFrame(adata.obs[CELL_ID].astype(int)) # extract cell IDs to dataframe
     cells[CLUSTER] = adata.obs[LEIDEN] # extract and add cluster assignments to cells dataframe
+
+    # add in method column if requested
+    if args.method:
+        cells[METHOD] = SCANPY
+
     cells.to_csv(f'{output}/{cells_file}', index=False)
 
 
@@ -121,6 +128,11 @@ def writeClusters(adata):
     clusters.index.name = CLUSTER # name indices as cluster column
     for cluster in adata.obs.leiden.cat.categories: # this assumes that LEIDEN = 'leiden' if the name is changed, replace it for 'leiden' in this line
         clusters.loc[cluster] = adata[adata.obs[LEIDEN].isin([cluster]),:].X.mean(0)
+    
+    # add in method column if requested
+    if args.method:
+        clusters[METHOD] = SCANPY
+
     clusters.to_csv(f'{output}/{clusters_file}')
 
 
@@ -130,7 +142,7 @@ Cluster data using the Leiden algorithm via scanpy
 def leidenCluster():
 
     sc.settings.verbosity = 3 # print out information
-    adata_init = sc.read(CLEAN_DATA_FILE, cache=False) # load in clean data
+    adata_init = sc.read(CLEAN_DATA_FILE, cache=True) # load in clean data
 
     # move CellID info into .obs
     # this assumes that 'CELL_ID' is the first column in the csv
@@ -171,6 +183,8 @@ if __name__ == '__main__':
     CELL_ID = 'CellID' # column name holding cell IDs
     CLUSTER = 'Cluster' # column name holding cluster number
     LEIDEN = 'leiden' # obs name for cluster assignment
+    METHOD = 'Method' # name of column containing the method for clustering
+    SCANPY = 'Scanpy' # the name of this method
     
     # output file names
     data_prefix = getDataName(args.input) # get the name of the input data file to add as a prefix to the output file names
