@@ -100,7 +100,7 @@ def clean(input_file):
         data = data.drop(columns=col_to_remove, axis=1)
 
     # save cleaned data to csv
-    data.to_csv(f'{output}/{CLEAN_DATA_FILE}', index=False)
+    data.to_csv(f'{output}/{clean_data_file}', index=False)
 
     if args.verbose:
         print(f'Done. Cleaned data is in {output}/clean_data.csv.')
@@ -142,7 +142,7 @@ Cluster data using the Leiden algorithm via scanpy
 def leidenCluster():
 
     sc.settings.verbosity = 3 # print out information
-    adata_init = sc.read(CLEAN_DATA_FILE, cache=True) # load in clean data
+    adata_init = sc.read(clean_data_file, cache=True) # load in clean data
 
     # move CellID info into .obs
     # this assumes that 'CELL_ID' is the first column in the csv
@@ -179,7 +179,6 @@ if __name__ == '__main__':
         markers = get_markers(args.markers)
 
     # constants
-    CLEAN_DATA_FILE = 'clean_data.csv' # name of output cleaned data CSV file
     CELL_ID = 'CellID' # column name holding cell IDs
     CLUSTER = 'Cluster' # column name holding cluster number
     LEIDEN = 'leiden' # obs name for cluster assignment
@@ -188,6 +187,7 @@ if __name__ == '__main__':
     
     # output file names
     data_prefix = getDataName(args.input) # get the name of the input data file to add as a prefix to the output file names
+    clean_data_file = f'{data_prefix}-clean.csv' # name of output cleaned data CSV file
     clusters_file = f'{data_prefix}-clusters.csv' # name of output CSV file that contains the mean expression of each feaute, for each cluster
     cells_file = f'{data_prefix}-cells.csv' # name of output CSV file that contains each cell ID and it's cluster assignation
     
