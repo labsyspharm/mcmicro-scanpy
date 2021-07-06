@@ -107,20 +107,21 @@ def clean(input_file):
 '''
 Write CELLS_FILE from leidenCluster() adata
 '''
-def writeCells(adata, LEIDEN):
+def writeCells(adata):
     cells = pd.DataFrame(adata.obs[CELL_ID].astype(int)) # extract cell IDs to dataframe
-    cells[CELL_ID] = adata.obs[LEIDEN] # extract and add cluster assignments to cells dataframe
+    cells[CLUSTER] = adata.obs[LEIDEN] # extract and add cluster assignments to cells dataframe
     cells.to_csv(f'{output}/{cells_file}', index=False)
 
 
 '''
 Write CLUSTERS_FILE from leidenCluster() adata
 '''
-def writeClusters(adata, LEIDEN):
-    clusters = pd.DataFrame(columns=adata.var_names, index=adata.obs[LEIDEN].cat.categories)                                                                                                 
+def writeClusters(adata):
+    clusters = pd.DataFrame(columns=adata.var_names, index=adata.obs[LEIDEN].cat.categories)   
+    clusters.index.name = CLUSTER # name indices as cluster column
     for cluster in adata.obs.leiden.cat.categories: # this assumes that LEIDEN = 'leiden' if the name is changed, replace it for 'leiden' in this line
         clusters.loc[cluster] = adata[adata.obs[LEIDEN].isin([cluster]),:].X.mean(0)
-    clusters.to_csv(f'{output}/{clusters_file}', index=False)
+    clusters.to_csv(f'{output}/{clusters_file}')
 
 
 '''
@@ -128,10 +129,8 @@ Cluster data using the Leiden algorithm via scanpy
 '''
 def leidenCluster():
 
-    LEIDEN = 'leiden' # obs name for cluster assignment
-
     sc.settings.verbosity = 3 # print out information
-    adata_init = sc.read(CLEAN_DATA_FILE, cache=True) # load in clean data
+    adata_init = sc.read(CLEAN_DATA_FILE, cache=False) # load in clean data
 
     # move CellID info into .obs
     # this assumes that 'CELL_ID' is the first column in the csv
@@ -143,10 +142,10 @@ def leidenCluster():
     sc.tl.leiden(adata, key_added = LEIDEN) # run leidan clustering. default resolution in 1.0
 
     # write cell/cluster information to 'CELLS_FILE'
-    writeCells(adata, LEIDEN)
+    writeCells(adata)
 
     # write cluster mean feature expression to 'CLUSTERS_FILE'
-    writeClusters(adata, LEIDEN)
+    writeClusters(adata)
 
 
 '''
@@ -170,6 +169,8 @@ if __name__ == '__main__':
     # constants
     CLEAN_DATA_FILE = 'clean_data.csv' # name of output cleaned data CSV file
     CELL_ID = 'CellID' # column name holding cell IDs
+    CLUSTER = 'Cluster' # column name holding cluster number
+    LEIDEN = 'leiden' # obs name for cluster assignment
     
     # output file names
     data_prefix = getDataName(args.input) # get the name of the input data file to add as a prefix to the output file names
