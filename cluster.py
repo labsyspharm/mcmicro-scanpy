@@ -188,8 +188,8 @@ if __name__ == '__main__':
     
     # output file names
     data_prefix = getDataName(args.input) # get the name of the input data file to add as a prefix to the output file names
-    clusters_file = f'{data_prefix}_clusters.csv' # name of output CSV file that contains the mean expression of each feaute, for each cluster
-    cells_file = f'{data_prefix}_cells.csv' # name of output CSV file that contains each cell ID and it's cluster assignation
+    clusters_file = f'{data_prefix}-clusters.csv' # name of output CSV file that contains the mean expression of each feaute, for each cluster
+    cells_file = f'{data_prefix}-cells.csv' # name of output CSV file that contains each cell ID and it's cluster assignation
     
     # clean input data file
     clean(args.input)
