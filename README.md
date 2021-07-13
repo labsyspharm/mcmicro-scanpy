@@ -3,7 +3,7 @@ An MCMICRO module implementation of scanpy for clustering cells using the Leiden
 
 ## Paramenter Reference
 ```
-usage: cluster.py [-h] -i INPUT [-o OUTPUT] [-m MARKERS] [-v] [-k NEIGHBORS]
+usage: cluster.py [-h] -i INPUT [-o OUTPUT] [-m MARKERS] [-v] [-k NEIGHBORS] [-c]
 
 Cluster cell types using mcmicro marker expression data.
 
@@ -18,4 +18,5 @@ optional arguments:
   -v, --verbose         Flag to print out progress of script
   -k NEIGHBORS, --neighbors NEIGHBORS
                         the number of nearest neighbors to use when clustering. The default is 30.
+  -c, --method          Include a column with the method name in the output files.
 ```
