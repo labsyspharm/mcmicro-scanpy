@@ -14,7 +14,7 @@ def parseArgs():
     parser.add_argument('-i', '--input', help="Input CSV of mcmicro marker expression data for cells", type=str, required=True)
     parser.add_argument('-o', '--output', help='The directory to which output files will be saved', type=str, required=False)
     parser.add_argument('-m', '--markers', help='A text file with a marker on each line to specify which markers to use for clustering', type=str, required=False)
-    parser.add_argument('-k', '--neighbors', help='the number of nearest neighbors to use when clustering. The default is 30.', default=30, type=int, required=False)
+    parser.add_argument('-k', '--neighbors', help='the number of nearest neighbors to use when clustering. The default is 20.', default=30, type=int, required=False)
     parser.add_argument('-c', '--method', help='Include a column with the method name in the output files.', action="store_true", required=False)
     args = parser.parse_args()
     return args
@@ -143,8 +143,8 @@ def leidenCluster():
     adata = ad.AnnData(np.delete(adata_init.X, 0, 1), obs=adata_init.obs, var=adata_init.var.drop([CELL_ID]))
 
     # compute neighbors and cluster
-    sc.pp.neighbors(adata, n_neighbors=args.neighbors, n_pcs=0) # compute neighbors, using the number of neighbors provided in the command line. Default is 30.
-    sc.tl.leiden(adata, key_added = LEIDEN) # run leidan clustering. default resolution in 1.0
+    sc.pp.neighbors(adata, n_neighbors=args.neighbors, n_pcs=None) # compute neighbors, using the number of neighbors provided in the command line. Default is 30.
+    sc.tl.leiden(adata, key_added = LEIDEN, resolution=1.0) # run leidan clustering. default resolution is 1.0
 
     # write cell/cluster information to 'CELLS_FILE'
     writeCells(adata)
