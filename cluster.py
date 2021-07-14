@@ -14,7 +14,6 @@ def parseArgs():
     parser.add_argument('-i', '--input', help="Input CSV of mcmicro marker expression data for cells", type=str, required=True)
     parser.add_argument('-o', '--output', help='The directory to which output files will be saved', type=str, required=False)
     parser.add_argument('-m', '--markers', help='A text file with a marker on each line to specify which markers to use for clustering', type=str, required=False)
-    parser.add_argument('-v', '--verbose', help='Flag to print out progress of script', action="store_true", required=False)
     parser.add_argument('-k', '--neighbors', help='the number of nearest neighbors to use when clustering. The default is 30.', default=30, type=int, required=False)
     parser.add_argument('-c', '--method', help='Include a column with the method name in the output files.', action="store_true", required=False)
     args = parser.parse_args()
@@ -74,9 +73,6 @@ def clean(input_file):
                         'AF.*', # autofluorescence
                         'A\d{3}.*'] # secondary antibody staining only (iy has to have 3 digist after)
 
-    if args.verbose:
-        print('Cleaning data...')
-
     # load csv
     data = pd.read_csv(input_file)
 
@@ -101,9 +97,6 @@ def clean(input_file):
 
     # save cleaned data to csv
     data.to_csv(f'{output}/{clean_data_file}', index=False)
-
-    if args.verbose:
-        print(f'Done. Cleaned data is in {output}/clean_data.csv.')
 
 
 '''
@@ -142,7 +135,7 @@ Cluster data using the Leiden algorithm via scanpy
 def leidenCluster():
 
     sc.settings.verbosity = 3 # print out information
-    adata_init = sc.read(clean_data_file, cache=True) # load in clean data
+    adata_init = sc.read(f'{output}/{clean_data_file}', cache=True) # load in clean data
 
     # move CellID info into .obs
     # this assumes that 'CELL_ID' is the first column in the csv
