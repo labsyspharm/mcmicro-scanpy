@@ -16,6 +16,6 @@ optional arguments:
   -m MARKERS, --markers MARKERS
                         A text file with a marker on each line to specify which markers to use for clustering
   -k NEIGHBORS, --neighbors NEIGHBORS
-                        the number of nearest neighbors to use when clustering. The default is 20.
+                        the number of nearest neighbors to use when clustering. The default is 30.
   -c, --method          Include a column with the method name in the output files.
 ```
