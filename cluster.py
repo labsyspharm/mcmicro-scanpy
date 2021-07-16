@@ -130,6 +130,14 @@ def writeClusters(adata):
 
 
 '''
+Get max value in dataframe.
+'''
+def getMax(df):
+    return max([n for n in df.max(axis = 0)])
+
+
+
+'''
 Cluster data using the Leiden algorithm via scanpy
 '''
 def leidenCluster():
@@ -141,6 +149,10 @@ def leidenCluster():
     # this assumes that 'CELL_ID' is the first column in the csv
     adata_init.obs[CELL_ID] = adata_init.X[:,0]
     adata = ad.AnnData(np.delete(adata_init.X, 0, 1), obs=adata_init.obs, var=adata_init.var.drop([CELL_ID]))
+
+    # if max value > 1000, log transform the data
+    if getMax(adata.X) > 1000:
+        sc.pp.log1p(adata)
 
     # compute neighbors and cluster
     sc.pp.neighbors(adata, n_neighbors=args.neighbors, n_pcs=10) # compute neighbors, using the first 10 principle components and the number of neighbors provided in the command line. Default is 30.
