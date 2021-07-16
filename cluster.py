@@ -143,7 +143,7 @@ def leidenCluster():
     adata = ad.AnnData(np.delete(adata_init.X, 0, 1), obs=adata_init.obs, var=adata_init.var.drop([CELL_ID]))
 
     # compute neighbors and cluster
-    sc.pp.neighbors(adata, n_neighbors=args.neighbors, n_pcs=None) # compute neighbors, using the number of neighbors provided in the command line. Default is 30.
+    sc.pp.neighbors(adata, n_neighbors=args.neighbors, n_pcs=10) # compute neighbors, using the first 10 principle components and the number of neighbors provided in the command line. Default is 30.
     sc.tl.leiden(adata, key_added = LEIDEN, resolution=1.0) # run leidan clustering. default resolution is 1.0
 
     # write cell/cluster information to 'CELLS_FILE'
