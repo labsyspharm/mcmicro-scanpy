@@ -1,6 +1,11 @@
 # mcmicro-scanpy
 An MCMICRO module implementation of scanpy for clustering cells using the Leiden algorithm.
 
+## Output Files
+- `cells.csv` contains the cluster assignment for each cell
+- `clusters.csv` contains each clusters' mean values for every feature 
+(if the max feature value is >1000 then the values will be log transformed for clustering and remain transformed in this output file)
+
 ## Paramenter Reference
 ```
 usage: cluster.py [-h] -i INPUT [-o OUTPUT] [-m MARKERS] [-k NEIGHBORS] [-c]
