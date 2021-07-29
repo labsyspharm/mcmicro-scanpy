@@ -1,6 +1,11 @@
 # mcmicro-scanpy
 An MCMICRO module implementation of scanpy for clustering cells using the Leiden algorithm.
 
+Example usage:
+```
+docker run --rm -v "$PWD":/data labsyspharm/mc-scanpy:1.0.1 python3 /app/cluster.py -i /data/unmicst-exemplar-001.csv -o /data/ -c
+```
+
 ## Output Files
 - `cells.csv` contains the cluster assignment for each cell
 - `clusters.csv` contains each clusters' mean values for every feature 
