@@ -16,6 +16,8 @@ def parseArgs():
     parser.add_argument('-m', '--markers', help='A text file with a marker on each line to specify which markers to use for clustering', type=str, required=False)
     parser.add_argument('-k', '--neighbors', help='the number of nearest neighbors to use when clustering. The default is 30.', default=30, type=int, required=False)
     parser.add_argument('-c', '--method', help='Include a column with the method name in the output files.', action="store_true", required=False)
+    parser.add_argument('--force-transform', help='Log transform the input data. If omitted, and --no-transform is omitted, log transform is only performed if the max value in the input data is >1000.', action='store_true', required=False)
+    parser.add_argument('--no-transform', help='Do not perform Log transformation on the input data. If omitted, and --force-transform is omitted, log transform is only performed if the max value in the input data is >1000.', action='store_true', required=False)
     args = parser.parse_args()
     return args
 
@@ -150,8 +152,10 @@ def leidenCluster():
     adata_init.obs[CELL_ID] = adata_init.X[:,0]
     adata = ad.AnnData(np.delete(adata_init.X, 0, 1), obs=adata_init.obs, var=adata_init.var.drop([CELL_ID]))
 
-    # if max value > 1000, log transform the data
-    if getMax(adata.X) > 1000:
+    # log transform the data according to parameter. If 'auto,' transform only if the max value >1000. Don't do anything if transform == 'false'
+    if transform == 'true':
+        sc.pp.log1p(adata)
+    elif transform == 'auto' and getMax(adata.X) > 1000:
         sc.pp.log1p(adata)
 
     # compute neighbors and cluster
@@ -182,6 +186,14 @@ if __name__ == '__main__':
     # get list of markers if provided
     if args.markers is not None:
         markers = get_markers(args.markers)
+
+    # assess log transform parameter
+    if args.force_transform != None and args.no_transform == None:
+        transform = 'true'
+    elif args.force_transform == None and args.no_transform != None:
+        transform = 'false'
+    else:
+        transform = 'auto'
 
     # constants
     CELL_ID = 'CellID' # column name holding cell IDs
