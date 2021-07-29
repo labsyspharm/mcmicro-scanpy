@@ -188,9 +188,9 @@ if __name__ == '__main__':
         markers = get_markers(args.markers)
 
     # assess log transform parameter
-    if args.force_transform != None and args.no_transform == None:
+    if args.force_transform and not args.no_transform:
         transform = 'true'
-    elif args.force_transform == None and args.no_transform != None:
+    elif not args.force_transform and args.no_transform:
         transform = 'false'
     else:
         transform = 'auto'
