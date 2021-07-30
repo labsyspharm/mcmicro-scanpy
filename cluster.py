@@ -174,10 +174,11 @@ def leidenCluster():
 
 
 '''
-write to a yaml file whether the data was transformed or not.
+Write to a yaml file whether the data was transformed or not.
 '''
 def writeYaml(transformed):
     with open('config.yaml', 'a') as f:
+        f.write('---\n')
         if transformed:
             f.write('transform: true')
         else:
