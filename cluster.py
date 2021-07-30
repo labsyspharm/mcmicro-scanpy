@@ -196,7 +196,7 @@ def readConfig(file):
     # find line with 'transform:' in it
     for l in lines:
         if 'transform:' in l.strip():
-            transform = l.split(':')[-1] # get last value after colon
+            transform = l.split(':')[-1].strip() # get last value after colon
 
     return transform
 
