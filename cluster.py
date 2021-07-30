@@ -1,4 +1,5 @@
 import re
+import os
 import argparse
 import numpy as np
 import pandas as pd
@@ -178,7 +179,8 @@ def leidenCluster():
 Write to a yaml file whether the data was transformed or not.
 '''
 def writeConfig(transformed):
-    with open('config.yaml', 'a') as f:
+    os.mkdir('qc')
+    with open('qc/config.yml', 'a') as f:
         f.write('---\n')
         if transformed:
             f.write('transform: true')
@@ -187,7 +189,7 @@ def writeConfig(transformed):
 
 
 '''
-Read config.yaml file contents.
+Read config.yml file contents.
 '''
 def readConfig(file):
     f = open(file, 'r')
