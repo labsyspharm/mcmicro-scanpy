@@ -16,6 +16,7 @@ def parseArgs():
     parser.add_argument('-m', '--markers', help='A text file with a marker on each line to specify which markers to use for clustering', type=str, required=False)
     parser.add_argument('-k', '--neighbors', help='the number of nearest neighbors to use when clustering. The default is 30.', default=30, type=int, required=False)
     parser.add_argument('-c', '--method', help='Include a column with the method name in the output files.', action="store_true", required=False)
+    parser.add_argument('-y', '--config', help='A yaml config file that states whether the input data should be log/logicle transformed.', type=str, required=False)
     parser.add_argument('--force-transform', help='Log transform the input data. If omitted, and --no-transform is omitted, log transform is only performed if the max value in the input data is >1000.', action='store_true', required=False)
     parser.add_argument('--no-transform', help='Do not perform Log transformation on the input data. If omitted, and --force-transform is omitted, log transform is only performed if the max value in the input data is >1000.', action='store_true', required=False)
     args = parser.parse_args()
@@ -155,12 +156,12 @@ def leidenCluster():
     # log transform the data according to parameter. If 'auto,' transform only if the max value >1000. Don't do anything if transform == 'false'. Write transform decision to yaml file.
     if transform == 'true':
         sc.pp.log1p(adata)
-        writeYaml(True)
+        writeConfig(True)
     elif transform == 'auto' and getMax(adata.X) > 1000:
         sc.pp.log1p(adata)
-        writeYaml(True)
+        writeConfig(True)
     else:
-        writeYaml(False)
+        writeConfig(False)
 
     # compute neighbors and cluster
     sc.pp.neighbors(adata, n_neighbors=args.neighbors, n_pcs=10) # compute neighbors, using the first 10 principle components and the number of neighbors provided in the command line. Default is 30.
@@ -176,13 +177,28 @@ def leidenCluster():
 '''
 Write to a yaml file whether the data was transformed or not.
 '''
-def writeYaml(transformed):
+def writeConfig(transformed):
     with open('config.yaml', 'a') as f:
         f.write('---\n')
         if transformed:
             f.write('transform: true')
         else:
             f.write('transform: false')
+
+
+'''
+Read config.yaml file contents.
+'''
+def readConfig(file):
+    f = open(file, 'r')
+    lines = f.readlines()
+
+    # find line with 'transform:' in it
+    for l in lines:
+        if 'transform:' in l.strip():
+            transform = l.split(':')[-1] # get last value after colon
+
+    return transform
 
 
 '''
@@ -208,6 +224,8 @@ if __name__ == '__main__':
         transform = 'true'
     elif not args.force_transform and args.no_transform:
         transform = 'false'
+    elif args.config is not None:
+        transform = readConfig(args.config)
     else:
         transform = 'auto'
 
