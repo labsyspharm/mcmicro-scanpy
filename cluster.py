@@ -156,10 +156,10 @@ def leidenCluster():
 
     # log transform the data according to parameter. If 'auto,' transform only if the max value >1000. Don't do anything if transform == 'false'. Write transform decision to yaml file.
     if transform == 'true':
-        sc.pp.log1p(adata)
+        sc.pp.log1p(adata, base=10)
         writeConfig(True)
     elif transform == 'auto' and getMax(adata.X) > 1000:
-        sc.pp.log1p(adata)
+        sc.pp.log1p(adata, base=10)
         writeConfig(True)
     else:
         writeConfig(False)
