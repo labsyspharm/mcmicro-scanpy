@@ -13,7 +13,7 @@ docker run --rm -v "$PWD":/data labsyspharm/mc-scanpy:1.0.1 python3 /app/cluster
 
 ## Paramenter Reference
 ```
-usage: cluster.py [-h] -i INPUT [-o OUTPUT] [-m MARKERS] [-k NEIGHBORS] [-c]
+usage: cluster.py [-h] -i INPUT [-o OUTPUT] [-m MARKERS] [-k NEIGHBORS] [-c] [-y CONFIG] [--force-transform] [--no-transform]
 
 Cluster cell types using mcmicro marker expression data.
 
@@ -28,4 +28,8 @@ optional arguments:
   -k NEIGHBORS, --neighbors NEIGHBORS
                         the number of nearest neighbors to use when clustering. The default is 30.
   -c, --method          Include a column with the method name in the output files.
+  -y CONFIG, --config CONFIG
+                        A yaml config file that states whether the input data should be log/logicle transformed.
+  --force-transform     Log transform the input data. If omitted, and --no-transform is omitted, log transform is only performed if the max value in the input data is >1000.
+  --no-transform        Do not perform Log transformation on the input data. If omitted, and --force-transform is omitted, log transform is only performed if the max value in the input data is >1000.
 ```
